@@ -2,6 +2,9 @@
 
 ## Release 1.1.0 - 2025-XX-XX
 
+### Fixes
+- Consensus process wasn't working if the reference fasta contained empty lines between segment sequences (default for fasta files from NCBI). This was due to bcftools stopping the processing when it hit an empty line. A sed command was introduced to remove empty lines from the reference before piping into bcftools. Also, it is a good idea to remove the empty lines from the reference fasta in the first place.
+
 ### Changes
 - Switched read trimming to fastp/fastplong. These softwares also provide the pre- and post-trimming QC reports.
   - Since all arguments are named (rather than positional), a single process is sufficient to add custom features to the trimming
@@ -16,6 +19,7 @@
 - Parameter validation has been implemented, the pipeline will print non-default parameter values when it starts.
 - The parameter `Singularity_cache` no longer exists, that was creating weird questions w.r.t. testing and we can let the software deal with that.
 - Added the data and files for minimal pipeline testing. The test profiles `test_MinION` and `test_Illumina` can be used.
+- The process that creates the plot of depth no longer outputs empty plots (nothing is output if no reads align).
 
 ## Release 1.0.1 - 2025-04-01
 
