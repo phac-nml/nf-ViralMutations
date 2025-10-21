@@ -15,7 +15,7 @@ process SnpCall {
     script:
     if (params.Seq_Tech == "Illumina") {
         """
-            freebayes -b ${bam} -f ${reference} --pooled-continuous -v ${Name}_variants.vcf -p 1 -B 3 -E -1 -F 0.005 --min-coverage 2
+            freebayes -b ${bam} -f ${reference} --pooled-continuous -v ${Name}_variants.vcf -p 1 -B 3 -E -1 -F 0.005 --min-coverage 1
             
             num_lines=\$( wc -l ${Name}_variants.vcf | cut -f1 -d ' ' )
             if [ \$num_lines -lt 65 ]; then
@@ -25,7 +25,7 @@ process SnpCall {
     }
     else {
         """
-            freebayes -b ${bam} -f ${reference} --pooled-continuous -v ${Name}_variants.vcf -m ${params.Read_MinMAPQ} -p 1 -B 3 -E -1 --haplotype-length -1 -F 0.03 --min-coverage 5
+            freebayes -b ${bam} -f ${reference} --pooled-continuous -v ${Name}_variants.vcf -m ${params.Read_MinMAPQ} -p 1 -B 3 -E -1 --haplotype-length -1 -F 0.03 --min-coverage 1
             
             num_lines=\$( wc -l ${Name}_variants.vcf | cut -f1 -d ' ' )
             if [ \$num_lines -lt 65 ]; then
@@ -125,12 +125,13 @@ process Consensus {
     tuple val(Name), file("${Name}_consensus.fasta")
 
     script:
+    minDepth = params.Consensus_MinDepth < params.SNP_MinDepth ? params.SNP_MinDepth : params.Consensus_MinDepth
     """
-        awk '\$3<${params.Consensus_MinDepth} {print}' ${depths} | cut -f1,2 > mask.tsv
+        awk '\$3<${minDepth} {print}' ${depths} | cut -f1,2 > mask.tsv
         sort -k1,1 -k2,2n mask.tsv > mask_sorted.tsv
         bgzip ${variants}
         tabix ${variants}.gz
-        cat ${reference} | bcftools consensus -p ${Name}_ -I -H A -m mask_sorted.tsv ${variants}.gz > ${Name}_consensus.fasta
+        cat ${reference} | sed "/^\$/d" | bcftools consensus -p ${Name}_ -I -H A -m mask_sorted.tsv ${variants}.gz > ${Name}_consensus.fasta
     """
 }
 

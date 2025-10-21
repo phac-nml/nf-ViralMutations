@@ -13,7 +13,7 @@ process AlignSelect {
 
     script:
     """
-        bwa mem ${Ref_fasta} -t ${task.cpus} -T 0 ${read1} ${read2} | awk '{if (\$3 != "*" && \$5 != "0") {print}}' > ${Name}.sam
+        bwa mem ${Ref_fasta} -t ${task.cpus} -T 0 ${read1} ${read2} | awk '{if (\$3 != "*") {print}}' > ${Name}.sam
     """
 }
 
@@ -73,7 +73,7 @@ process MinIONAlign {
 
     script:
     """
-        2>&1 minimap2 -x map-ont -a -t ${task.cpus} ${FastaReference} ${reads} > ${Name}_Aligned.sam
+        minimap2 -x map-ont -a -t ${task.cpus} ${FastaReference} ${reads} | awk '{if (\$3 != "*") {print}}' > ${Name}_Aligned.sam
     """
 }
 

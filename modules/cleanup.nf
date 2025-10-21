@@ -92,7 +92,7 @@ process Downsample {
     }
     else {
         """
-            DownsampleToCoverage_ONT.py -r ${bam} -n ${Name}_Aligned_ds.bam -c ${depth} -t ${params.SNP_MaxCov}
+            DownsampleToCoverage.py -r ${bam} -n ${Name}_Aligned_ds.bam -c ${depth} -t ${params.SNP_MaxCov}
         """
     }
 }

@@ -58,6 +58,7 @@ process CreateHostIndexMinION {
 
 process GetIndex {
     label 'process_single'
+    tag { referenceName }
 
     input:
     val index_dir
@@ -78,6 +79,7 @@ process SetSnpEff {
         'https://depot.galaxyproject.org/singularity/snpeff:5.2--hdfd78af_1' :
         'biocontainers/snpeff:5.2--hdfd78af_1'}"
     label 'process_single'
+    tag { snpeff_name }
 
     input:
     path snpeff_dataFolder

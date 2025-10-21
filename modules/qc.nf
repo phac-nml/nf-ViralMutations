@@ -71,7 +71,7 @@ process DepthGraph {
     tuple val(Name), file(depths)
 
     output:
-    file "${Name}_depth.pdf"
+    path "${Name}_depth.pdf", optional: true
 
     script:
     """
