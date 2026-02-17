@@ -60,7 +60,7 @@ process PrimerClip {
 
     script:
     """
-        bamclipper.sh -b ${bam} -p ${primer_locs} -n ${task.cpus} -d 20
+        bamclipper_m.sh -b ${bam} -p ${primer_locs} -n ${task.cpus} -d 40
         
         basename=\$( echo ${bam} | sed "s/.bam//g" )
 
