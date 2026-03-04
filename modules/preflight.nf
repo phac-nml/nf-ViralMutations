@@ -82,12 +82,12 @@ process SetSnpEff {
     tag { snpeff_name }
 
     input:
-    path snpeff_dataFolder
+    path snpeff_gtf
     val snpeff_name
     file snpeff_config
 
     output:
-    file "snpEff2.config"
+    tuple file("snpEff2.config"), path ("${snpeff_gtf}"), path ("./${snpeff_name}/sequence.bin"), path ("./${snpeff_name}/snpEffectPredictor.bin"), val("${snpeff_name}")
 
     script:
     """
@@ -95,7 +95,8 @@ process SetSnpEff {
         cat ${snpeff_config} > snpEff2.config
         
         echo \$snpEff_line >> snpEff2.config
-
+        mkdir ${snpeff_name}
+        cp ${snpeff_gtf} ./${snpeff_name}/.
         snpEff build -noCheckCds -noCheckProtein -c snpEff2.config -dataDir . ${snpeff_name}
     """
 }

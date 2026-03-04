@@ -9,9 +9,9 @@ include {
 
 workflow PreFlight{
     main:
-        snpeff_folder_ch = channel.fromPath("${params.SnpEff_Folder}/${params.SnpEff_Name}", type: 'dir')
+        snpeff_entry_ch = channel.fromPath("${params.SnpEff_gtf}")
         snpeff_config_ch = channel.fromPath("${projectDir}/data/snpEff.config")
-        SetSnpEff(snpeff_folder_ch, params.SnpEff_Name, snpeff_config_ch)
+        SetSnpEff(snpeff_entry_ch, params.SnpEff_Name, snpeff_config_ch)
 
         ref_index_ch = channel.empty()
         

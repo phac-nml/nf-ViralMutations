@@ -71,13 +71,13 @@
                 },
                 "SnpEff_Name": {
                     "type": "string",
-                    "description": "The name of the folder containing the snpEff data (sequence.fasta and genes.gbk)."
+                    "description": "The name of the folder to use for the snpEff data (genes.gtf specified in SnpEff_gtf)."
                 },
-                "SnpEff_Folder": {
+                "SnpEff_gtf": {
                     "type": "string",
-                    "format": "directory-path",
+                    "format": "file-path",
                     "exists": true,
-                    "description": "The path to the folder that contains the snpEff data folders. (i.e. the path to the parent folder of SnpEff_Name)"
+                    "description": "The path to the gtf file that contains the annotations and sequence."
                 },
                 "GenePos": {
                     "type": "string",
