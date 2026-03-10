@@ -25,7 +25,7 @@ class IncorrectCigarChar(Exception):
 
 def main(args):
     RefFile, NewFile, Coverage, Target = None, None, None, None
-    seed = 0
+    seed = None
     try:
         opts, args = getopt.getopt(args, "r:n:c:t:s:h", [
                                    "reference=", "new=", "coverage=", "target=", "seed=", "help"])
