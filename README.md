@@ -24,7 +24,7 @@ A profile is also set up to use `slurm`, remember to set the `SLURM_Queue` param
 Assuming all the parameters are stored in a JSON or YAML file, navigate to the folder where you want the `nextflow` and `work` directories to be located and run the following command:
 
 ```shell
-nextflow run PHAC-NML/nf-ViralMutations -r v1.1.0 -params-file /loc/of/Params_Exp1.yml -profile singularity,slurm -with-report -with-dag
+nextflow run PHAC-NML/nf-ViralMutations -r v1.1.0 -params-file /loc/of/Params_Exp1.yml -profile singularity,slurm
 ```
 
 ## Parameters
@@ -40,25 +40,23 @@ To mitigate this, it is also possible to specify the location of the index files
 
 #### For a new host reference
 
-Set the `Host_Reference` parameter to the full path of the fasta (gzipped or not) sequence and set the `Host_IndexOutFolder` parameter to the location where to save the index (generally the same folder as the reference). (YAML)
+Set the `Host_Reference` parameter to the full path of the fasta (gzipped or not) sequence and set the `Host_IndexOut` parameter to `true` to save the index to the output folder. (YAML)
 
 ```YAML
 Host_Reference: "/home/user/Hosts/Human_T2TY.fa.gz"
-Host_IndexOutFolder: "/home/user/Hosts"
+Host_IndexOut: true
 Host_Indexed: false
-Host_IndexFolder: ""
 ```
 
 #### For a previously-indexed host reference
 
-Set the `Host_Reference` parameter to the __file name__ of the fasta sequence and set the `Host_IndexFolder` parameter to tha location that contains both the fasta file and the index files. (JSON)
+Set the `Host_Reference` parameter to the __file path__ of the fasta sequence and set the `Host_IndexOut` parameter to tha location that contains both the fasta file and the index files. (JSON)
 
 ```JSON
 {
-    "Host_Reference": "Human_T2TY.fa.gz",
-    "Host_IndexOutFolder": "",
-    "Host_Indexed": true,
-    "Host_IndexFolder": "/home/user/Hosts"
+    "Host_Reference": "/home/user/Hosts/Human_T2TY.fa.gz",
+    "Host_IndexOut": false,
+    "Host_Indexed": true
 }
 ```
 
@@ -102,14 +100,11 @@ The pipeline uses snpEff to infer the effect of mutations.
 The snpEff database is "rebuilt" for every run.
 In order for the pipeline to run you must pass a name for the pathogen and a folder containing the sequence and annotations.
 The entry is added to a barebones snpEff.config file saved in the pipeline directory which passed along to the snpEff process.
-The entry is built in the folder specified, make sure it is write-accessible.
-The folder should have the same name as the name passed to snpEff and contain two files: 
 
-- `sequence.fasta` contains the fasta sequence (sequences for segmented genomes)
-- `genes.gbk` contains the annotations in GenBank format (concatenated entries for segmented genomes)
+- `genes.gtf` contains the annotations in GTF (GFF3) format (concatenated entries for segmented genomes) and the FASTA sequences under a `##FASTA` section
 
 The easiest way to assemble this folder is to download the entries (selecting all of them for segmented genomes) from GenBank (or other repository) directly.
-If the annotations were modified and exported in a Windows software (e.g. DNASTAR's SeqBuilder), make sure the files have LF (and not CRLF) line endings.
+If the annotations were modified and exported in a Windows software (e.g. DNASTAR's SeqBuilder or UGENE), make sure the files have LF (and not CRLF) line endings.
 
 ### Input reads
 
@@ -139,9 +134,9 @@ Virus3,/home/user/Data/Experiment3/Fastq/Samp2_S5_R1_001.fastq,/home/user/Data/E
 #### MinION
 
 MinION reads are usually stored in a folder called `fastq_pass` which contains a folder for each barcode (e.g. `barcode01`).
-If this is the case for your data, set `MinION_split` to `true` and the `longreads` column of the samplesheet to the path of the folder that contains the fastq files for that sample.
+If this is the case for your data, set `MinION_split` to `true` and the `long_reads` column of the samplesheet to the path of the folder that contains the fastq files for that sample. You'll also need to specify the extension for the files.
 
-If your data has already been collated and the read files have meaningful names, set `MinION_split` to `false` and the `longreads` column to the collated fastq file.
+If your data has already been collated and the read files have meaningful names, set `MinION_split` to `false` and the `long_reads` column to the collated fastq file.
 If you data is collated but you want to change the sample names, put each read file in its own folder and follow the instructions for non-collated data.
 
 YAML example for non-collated data:
@@ -149,6 +144,7 @@ YAML example for non-collated data:
 ```YAML
 input: "/home/user/Data/Experiment2/no_sample/run_guid/samplesheet.csv"
 MinION_split: true
+Extension: ".fastq.gz"
 ```
 
 with the file `samplesheet.csv` looking like:
