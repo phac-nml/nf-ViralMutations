@@ -20,12 +20,11 @@ process CreateHostIndex {
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/bwa:0.7.18--he4a0461_1' :
         'biocontainers/bwa:0.7.18--he4a0461_1'}"
-    publishDir "${OutFolder}", mode: 'copy'
+    publishDir "${params.outdir}", mode: 'copy', enabled: params.Host_IndexOut
     label 'process_high_memory'
 
     input:
     path reference
-    path OutFolder
 
     output:
     path "${reference}.*"
@@ -40,12 +39,11 @@ process CreateHostIndexMinION {
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/minimap2:2.28--he4a0461_3' :
         'biocontainers/minimap2:2.28--he4a0461_3'}"
-    publishDir "${OutFolder}", mode: 'copy'
+    publishDir "${params.outdir}", mode: 'copy', enabled: params.Host_IndexOut
     label 'process_high_memory'
 
     input:
     path reference
-    path OutFolder
 
     output:
     path "${reference}.*"
@@ -53,24 +51,6 @@ process CreateHostIndexMinION {
     script:
     """
         minimap2 -x map-ont -d ${reference}.mmi ${reference}
-    """
-}
-
-process GetIndex {
-    label 'process_single'
-    tag { referenceName }
-
-    input:
-    val index_dir
-    val referenceName
-
-    output:
-    tuple path("${referenceName}.amb"), path("${referenceName}.ann"), path("${referenceName}.bwt"), path("${referenceName}.pac"), path("${referenceName}.sa"), optional: true, emit: bwa_index_ch
-    path("${referenceName}.mmi"), optional: true, emit: minimap_index_ch
-
-    script:
-    """
-        ln -s ${index_dir}/${referenceName}.* .
     """
 }
 

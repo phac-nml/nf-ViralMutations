@@ -23,6 +23,7 @@
 - The process that creates the plot of depth no longer outputs empty plots (nothing is output if no reads align).
 - Increased the BamClipper downstream count to 40 so that anything close to the 5' of the primers will trigger a check for sequences to clip.
 - The snpEff inputs are the name to use for the entry and a GTF file with a ##FASTA entry that contains the sequence data.
+- The host genome to use when de-hosting is provided by a single file path instead of a directory path and file name. The GetIndex process has been removed and replaced with the creation of a value channel passing the index file names.
 
 ## Release 1.0.1 - 2025-04-01
 

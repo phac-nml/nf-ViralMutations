@@ -100,25 +100,20 @@
             "properties": {
                 "Host_Reference": {
                     "type": "string",
+                    "format": "file-path",
+                    "exists": true,
                     "pattern": "^\\S+\\.f(ast|n)?a(\\.gz)?$",
-                    "description": "The name of the file which has the host genome."
+                    "description": "The full path of the file which has the host genome."
                 },
                 "Host_Indexed": {
                     "type": "boolean",
                     "default": false,
-                    "desctiption": "Set to true if the host genome is already indexed (set the Host_IndexFolder) or false if the host genome needs to be indexed (set Host_IndexOutFolder)."
+                    "desctiption": "Set to true if the host genome is already indexed or false if the host genome needs to be indexed (set Host_IndexOut)."
                 },
-                "Host_IndexFolder": {
-                    "type": "string",
-                    "format": "directory-path",
-                    "exists": true,
-                    "description": "The folder where to find the index files for the host genome (e.g. *.fasta.mmi for MinION and the output files of BWA index for Illumina)."
-                },
-                "Host_IndexOutFolder": {
-                    "type": "string",
-                    "format": "directory-path",
-                    "exists": false,
-                    "description": "If the genome is not already index, where to save the index files generated?"
+                "Host_IndexOut": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If the genome is not already index, save the index files to outdir?"
                 }
             },
             "description": "The files and folders describing the host, if dehosting is desired."
