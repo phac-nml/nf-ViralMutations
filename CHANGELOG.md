@@ -24,6 +24,7 @@
 - Increased the BamClipper downstream count to 40 so that anything close to the 5' of the primers will trigger a check for sequences to clip.
 - The snpEff inputs are the name to use for the entry and a GTF file with a ##FASTA entry that contains the sequence data.
 - The host genome to use when de-hosting is provided by a single file path instead of a directory path and file name. The GetIndex process has been removed and replaced with the creation of a value channel passing the index file names.
+- Processes now handle the sample name as per nf-core principles. The first element of input and output of sample-specific processes is the "meta" value, which contains 3 fields: id, sample, external_id. This allows the `iridanext` plugin to properly find and point to output files. The function that processes the initial data entries is based on `format_reads` found in: https://github.com/phac-nml/mikrokondo/blob/main/subworkflows/local/input_check.nf (commit: 822695d). 
 
 ## Release 1.0.1 - 2025-04-01
 

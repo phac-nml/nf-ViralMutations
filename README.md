@@ -103,7 +103,7 @@ The entry is added to a barebones snpEff.config file saved in the pipeline direc
 
 - `genes.gtf` contains the annotations in GTF (GFF3) format (concatenated entries for segmented genomes) and the FASTA sequences under a `##FASTA` section
 
-The easiest way to assemble this folder is to download the entries (selecting all of them for segmented genomes) from GenBank (or other repository) directly.
+The easiest way to assemble this file is to download the entries (selecting all of them for segmented genomes) from GenBank (or other repository) directly.
 If the annotations were modified and exported in a Windows software (e.g. DNASTAR's SeqBuilder or UGENE), make sure the files have LF (and not CRLF) line endings.
 
 ### Input reads
