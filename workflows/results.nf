@@ -20,9 +20,8 @@ workflow Results {
         | combine(basic_vcf_header)
         | MakeNiceVCF
     if (params.SnpEff_Name) {
-        snpEff_folder_ch = channel.fromPath("${params.SnpEff_Folder}/${params.SnpEff_Name}", type: 'dir')
         filtervcf_ch = channel.fromPath("${projectDir}/bin/filter_vcf_lofreq_tsv.awk", type: 'file')
-        SnpEff(MakeNiceVCF.out.nice_vcf_ch.combine(snpeff_config_ch).combine(snpEff_folder_ch))
+        SnpEff(MakeNiceVCF.out.nice_vcf_ch.combine(snpeff_config_ch))
         FilterVCF(SnpEff.out.snpeff_files_ch.combine(filtervcf_ch))
         if (params.GenePos) {
             geneLocs_ch = channel.fromPath(params.GenePos, type: 'file')

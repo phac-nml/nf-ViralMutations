@@ -93,7 +93,7 @@ process MinIONUnalignSelect {
 
     script:
     """
-        minimap2 -a ${mmi_file} -t ${task.cpus} ${reads} | awk '{if (\$3 == "*" && \$5 == "0") {print}}' > ${Name}_Host.sam
+        minimap2 -x map-ont -a ${mmi_file} -t ${task.cpus} ${reads} | awk '{if (\$3 == "*" && \$5 == "0") {print}}' > ${Name}_Host.sam
     """
 }
 

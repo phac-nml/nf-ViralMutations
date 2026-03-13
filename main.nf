@@ -40,7 +40,7 @@ workflow {
     reference_ch = Channel.fromPath(params.Target_Reference, type: 'file', checkIfExists: true)
     PreFlight()
     PreProcess()
-    Alignment(PreProcess.out.trimmed_reads, PreFlight.out.Target_Reference, PreFlight.out.Host_bwa, PreFlight.out.Host_minimap, reference_ch)
+    Alignment(PreProcess.out.trimmed_reads, PreFlight.out.Target_Reference, PreFlight.out.Host, reference_ch)
     BAM_QC(Alignment.out.aligned_reads)
     CleanUp(Alignment.out.aligned_reads, PreFlight.out.Primers)
     Results(CleanUp.out.final_align, reference_ch, PreFlight.out.SnpEff_config, CleanUp.out.depths)

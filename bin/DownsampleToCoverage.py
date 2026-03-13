@@ -121,8 +121,7 @@ def readDepth(Coverage, Target):
 
 
 def GetReads(Ranges, Depths, RefFile, Target, Seed):
-    if Seed > 0:
-        random.seed(Seed)
+    random.seed(Seed)
     keep = []
     with pysam.AlignmentFile(RefFile, "rb") as infile:
         print(infile.count())

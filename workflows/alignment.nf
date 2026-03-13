@@ -13,21 +13,16 @@ workflow Alignment {
     take:
     trimmed_reads_ch
     reference_ch    
-    host_bwa_ch
-    host_minimap_ch         
+    host_ch     
     ref_fasta_ch    
 
     main:
     aligned_reads_ch = channel.empty()
     if (params.Host_Reference) {
         if (params.Seq_Tech == "Illumina") {
-            if (params.Host_Indexed) {
-                host_fasta_ch = Channel.fromPath("${params.Host_IndexFolder}/${params.Host_Reference}", type: 'file')
-            }
-            else {
-                host_fasta_ch = Channel.fromPath("${params.Host_Reference}", type: 'file')
-            }
-            UnalignSelect(trimmed_reads_ch.combine(host_bwa_ch).combine(host_fasta_ch))
+            host_fasta_ch = Channel.fromPath("${params.Host_Reference}", type: 'file')
+            
+            UnalignSelect(trimmed_reads_ch.combine(host_ch).combine(host_fasta_ch))
                 | UnalignExtract
                 | combine(reference_ch)
                 | combine(ref_fasta_ch)
@@ -36,7 +31,7 @@ workflow Alignment {
                 | set { aligned_reads_ch }
         }
         else {
-            MinIONUnalignSelect(trimmed_reads_ch.combine(host_minimap_ch))
+            MinIONUnalignSelect(trimmed_reads_ch.combine(host_ch))
                 | MinIONUnalignExtract
                 | combine(ref_fasta_ch)
                 | MinIONAlign

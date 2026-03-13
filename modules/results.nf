@@ -69,7 +69,7 @@ process SnpEff {
     publishDir "${params.outdir}/${Name}/QC/Raw", pattern: "${Name}_snpEff.csv", mode: 'copy'
 
     input:
-    tuple val(Name), file(vcf), file(snpEff_cfg), path(snpEff_folder)
+    tuple val(Name), file(vcf), file(snpEff_cfg), path(snpeff_gtf), path(snpeff_seqbin), path(snpeff_predbin), val(snpeff_name)
 
     output:
     tuple val(Name), file("${Name}_variants_annot.vcf"), file("${Name}_variants_missense.vcf"), file("${Name}_variants_stops.vcf"), file("${Name}_variants_updown_mod.vcf"), file("${Name}_variants_annot.html"), emit: snpeff_files_ch, optional: true
@@ -77,6 +77,11 @@ process SnpEff {
 
     script:
     """
+        mkdir ${snpeff_name}
+        cp ${snpeff_gtf} ./${snpeff_name}/genes.gtf
+        cp ${snpeff_seqbin} ./${snpeff_name}/sequence.bin
+        cp ${snpeff_predbin} ./${snpeff_name}/snpEffectPredictor.bin
+
         numLines=\$((\$(wc -l ${vcf} | cut -d ' ' -f 1)-5))
         echo \$numLines
         if [ \$numLines -gt 0 ]; then

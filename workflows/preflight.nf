@@ -1,6 +1,5 @@
 include {
     CreateIndex;
-    GetIndex;
     CreateHostIndex;
     CreateHostIndexMinION;
     SetSnpEff;
@@ -9,9 +8,9 @@ include {
 
 workflow PreFlight{
     main:
-        snpeff_folder_ch = channel.fromPath("${params.SnpEff_Folder}/${params.SnpEff_Name}", type: 'dir')
+        snpeff_entry_ch = channel.fromPath("${params.SnpEff_gtf}")
         snpeff_config_ch = channel.fromPath("${projectDir}/data/snpEff.config")
-        SetSnpEff(snpeff_folder_ch, params.SnpEff_Name, snpeff_config_ch)
+        SetSnpEff(snpeff_entry_ch, params.SnpEff_Name, snpeff_config_ch)
 
         ref_index_ch = channel.empty()
         
@@ -19,13 +18,21 @@ workflow PreFlight{
             ref_index_ch = CreateIndex(params.Target_Reference)
         }
         if( params.Host_Indexed){
-            GetIndex(params.Host_IndexFolder, params.Host_Reference)
+            if ( params.Seq_Tech == "Illumina"){
+                host_index_ch = Channel.value(tuple("${params.Host_Reference}.amb",
+                                                    "${params.Host_Reference}.ann",
+                                                    "${params.Host_Reference}.bwt",
+                                                    "${params.Host_Reference}.pac",
+                                                    "${params.Host_Reference}.sa"))
+            } else {
+                host_index_ch = Channel.value("${params.Host_Reference}.mmi")
+            }
         } else {
             if(params.Host_Reference){
                 if ( params.Seq_Tech == "Illumina") {
-                    host_index_ch = CreateHostIndex(params.Host_Reference, params.Host_IndexOutFolder)
+                    host_index_ch = CreateHostIndex(params.Host_Reference)
                 } else {
-                    host_index_ch = CreateHostIndexMinION(params.Host_Reference, params.Host_IndexOutFolder)
+                    host_index_ch = CreateHostIndexMinION(params.Host_Reference)
                 }
             } else {
                 host_index_ch = channel.empty()
@@ -46,7 +53,6 @@ workflow PreFlight{
     emit:
         SnpEff_config = SetSnpEff.out.ifEmpty("EMPTY")
         Target_Reference = ref_index_ch
-        Host_bwa = params.Host_Indexed? GetIndex.out.bwa_index_ch : host_index_ch
-        Host_minimap = params.Host_Indexed? GetIndex.out.minimap_index_ch : host_index_ch
+        Host = host_index_ch
         Primers = primer_locs_ch.ifEmpty("EMPTY")
 }
