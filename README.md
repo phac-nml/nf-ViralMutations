@@ -61,7 +61,7 @@ Host_Indexed: false
 
 #### For a previously-indexed host reference
 
-Set the `Host_Reference` parameter to the __file path__ of the fasta sequence and set the `Host_IndexOut` parameter to tha location that contains both the fasta file and the index files. (JSON)
+Set the `Host_Reference` parameter to the __file path__ of the fasta sequence and set the `Host_Indexed` parameter to `true`. (JSON)
 
 ```JSON
 {
