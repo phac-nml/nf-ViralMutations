@@ -15,7 +15,9 @@ workflow PreProcess {
             RawReadFolders_ch = Channel.empty()
 
             Channel.fromSamplesheet("input")
-                | map { row -> tuple(row.external_id[0], file(row.long_reads[0], type: 'dir', checkIfExists: true))}
+                | map { 
+                        meta -> format_reads(meta)
+                    }
                 | view()
                 | set { RawReadFolders_ch }
             CombineMinIONFastq(RawReadFolders_ch)
@@ -25,8 +27,10 @@ workflow PreProcess {
         else {
             MinION_reads_ch = Channel.empty()
 
-            Channel.fromSamplesheet("input")
-                | map { row -> tuple(row.external_id[0], file(row.long_reads[0], checkIfExists: true))}
+            Channel.fromSamplesheet("input", parameters_schema: 'nextflow_schema.json')
+                | map { 
+                        meta -> format_reads(meta)
+                    }
                 | view()
                 | set { MinION_reads_ch }
             TrimMinION(MinION_reads_ch)
@@ -37,7 +41,9 @@ workflow PreProcess {
         raw_reads_ch = Channel.empty()
 
         Channel.fromSamplesheet("input")
-                | map { row -> tuple(row.external_id[0], file(row.fastq_1[0], checkIfExists: true), file(row.fastq_2[0], checkIfExists: true))}
+                | map { 
+                        meta -> format_reads(meta)
+                    }
                 | view()
                 | set { raw_reads_ch }
 
@@ -47,4 +53,38 @@ workflow PreProcess {
     emit:
     trimmed_reads = trimmed_reads_ch.trim_reads_ch
     trim_reports  = trimmed_reads_ch.trim_report_ch
+}
+
+def format_reads(ArrayList sheet_data){
+    def meta = [:]
+    def error_occured = false
+    if(sheet_data[0].id){
+        meta.id = sheet_data[0].id
+        meta.sample = sheet_data[0].id
+        meta.external_id = sheet_data[0].external_id
+    }else{
+        meta.id = sheet_data[0].external_id
+        meta.sample = sheet_data[0].external_id
+        meta.external_id = sheet_data[0].external_id
+    }
+
+    def ret_val = null
+
+    // A map could probably clean this up
+    if(sheet_data[0].fastq_1 && sheet_data[0].fastq_2){
+        ret_val = tuple(meta, [file(sheet_data[0].fastq_1), file(sheet_data[0].fastq_2)])
+
+    }else if(sheet_data[0].long_reads){
+        ret_val = tuple(meta, file(sheet_data[0].long_reads))
+
+    }else{
+        log.warning "Cannot determine what type of data is presented for $meta.id, more that one read type is specified"
+        error_occured = true
+    }
+
+    if(error_occured){
+        exit 1
+    }
+
+    return ret_val
 }
