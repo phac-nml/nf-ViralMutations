@@ -77,7 +77,7 @@ Illumina adapter removal is performed using [fastp](https://github.com/OpenGene/
 Those tools also perform pre- and post-trimming read QC.
 It is possible to specify either the number of bases to clip from the 5' end of each base or the specific adapter sequences to trim (specify both).
 Custom trim arguments can be specified for both Illumina and MinION trimming.
-**Note that the rest of the pipeline is not designed to deal with merged reads, please do not activate this feature."
+**Note that the rest of the pipeline is not designed to deal with merged reads, please do not activate this feature.**
 
 To clip the first 14 bases from R2 (e.g. Takara stranded RNA prep, pico input): (YAML)
 
@@ -117,6 +117,13 @@ The entry is added to a barebones snpEff.config file saved in the pipeline direc
 The easiest way to assemble this file is to download the entries (selecting all of them for segmented genomes) from GenBank (or other repository) directly.
 If the annotations were modified and exported in a Windows software (e.g. DNASTAR's SeqBuilder or UGENE), make sure the files have LF (and not CRLF) line endings.
 
+Specify a name for the snpEff entry (`SnpEff_Name`) and a path to the `genes.gtf` file (`SnpEff_gtf`).
+
+```YAML
+SnpEff_Name: "ebov_refseq"
+SnpEff_gtf: "/home/user/Data/gtfFiles/EBOV_RefSeq/genes.gtf
+```
+
 ### Input reads
 
 The `input` parameter takes a csv file that must have columns `sample` and `fastq_1`.
@@ -147,8 +154,7 @@ Virus3,/home/user/Data/Experiment3/Fastq/Samp2_S5_R1_001.fastq,/home/user/Data/E
 MinION reads are usually stored in a folder called `fastq_pass` which contains a folder for each barcode (e.g. `barcode01`).
 If this is the case for your data, set `MinION_split` to `true` and the `long_reads` column of the samplesheet to the path of the folder that contains the fastq files for that sample. You'll also need to specify the extension for the files.
 
-If your data has already been collated and the read files have meaningful names, set `MinION_split` to `false` and the `long_reads` column to the collated fastq file.
-If you data is collated but you want to change the sample names, put each read file in its own folder and follow the instructions for non-collated data.
+If your data has already been collated, set `MinION_split` to `false` and the `long_reads` column to the collated fastq file.
 
 YAML example for non-collated data:
 
@@ -175,6 +181,14 @@ JSON example for pre-collated data:
 }
 ```
 
+with the file `samplesheet.csv` looking like:
+
+```CSV
+sample,long_reads
+Samp1,/home/user/Data/Experiment3/samp1.fastq
+Virus3,/home/user/Data/Experiment3/samp2.fastq.gz
+```
+
 ### Primer clipping
 
 The pipeline uses BamClipper for positional primer clipping post-alignment.
@@ -194,7 +208,7 @@ If the bedpe file is already in the correct 6-column format, set `Primer_Format`
 - `outdir` defaults to `${launchDir}/Results`, but can be changed.
 - `Seq_Tech` should be either `Illumina` or `MinION`.
 - `Target_Reference` is the path to the viral genome you are aligning to. Since viral genomes are generally small, it is always re-indexed.
-- `Extension` specifies exactly what the extension of the original read files is, e.g.: `.fastq`, `.fa.gz`
+- `Extension` specifies exactly what the extension of the original read files is, e.g.: `.fastq`, `.fa.gz`. Only used when `MinION_split` is set to `true`. 
 - `SLURM_Queue` to specify the SLURM queue or partition to be used. Only used with the `slurm` profile.
 - `GenePos` (optional) an Excel file used to annotate the graph of SNPs with the following columns:
   - `CHR` The reference name.
@@ -215,6 +229,8 @@ Most intermediate files are saved into `outdir` to allow QC of the different ste
 - `{SampleName}_variants_annot.html` snpEff summary of the effect of mutations.
 - `Alignments/{SampleName}_Aligned_pe.bam` Initial alignment to the `Target_Reference`. All derivatives created during clean-up are in the `Alignments` sub-folder, the order they are created is: _dd (deduplicated; Illumina-only), _pc (primer-clipped), _noSplit (filtered), _ds (downsampled; if max-depth was specified).
 - `{SampleName}_consensus.fasta` The consensus sequence.
+- `QC/{SampleName}_depths.pdf` Graph of the read depth at each reference position (same as the grey line in the `**_variants.pdf` file).
+- `QC/{SampleName}_multiqc.html` A MultiQC report of all intermediate QC steps.
 
 ## Example DAGs
 
@@ -222,15 +238,15 @@ Given the different combinations, the DAGs below are not exhaustive but they ref
 
 ### Illumina PCR sequencing
 
-![DAG showing the processes involved in analysing Illumina tiling amplicon data](images/DAG_Illumina_PCR.png)
+![DAG showing the processes involved in analysing Illumina tiling amplicon data](images/DAG_Illumina_PCR.jpeg)
 
 ### Illumina Shotgun sequencing with pre-indexed host sequence
 
-![DAG showing the processes involved in analysing Illumina shotgun data, including de-hosting with a pre-indexed host sequence](images/DAG_Illumina_Shotgun.png)
+![DAG showing the processes involved in analysing Illumina shotgun data, including de-hosting with a pre-indexed host sequence](images/DAG_Illumina_Shotgun.jpeg)
 
 ### MinION PCR sequencing
 
-![DAG showing the processes involved in analysing MinION tiling amplicon data](images/DAG_MinION_PCR.png)
+![DAG showing the processes involved in analysing MinION tiling amplicon data](images/DAG_MinION_PCR.jpeg)
 
 ## Support
 Should any issues arise when running this pipeline, please create an issue for the moment.
