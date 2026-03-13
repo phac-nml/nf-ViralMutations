@@ -31,11 +31,11 @@ nextflow run PHAC-NML/nf-ViralMutations -r v1.1.0 -params-file /loc/of/Params_Ex
 
 Two test configurations are included as profiles. One tests the Illumina pipeline and includes de-hosting (using MPXV genome as host for speed). The other tests the MinION pipeline and includes primer clipping. The datasets included are quite small so they should run quickly. These tests only ensure all processes can run without issue.
 
-**If you are using SLURM, modify the two configs (`configs/test_illumina.config` and `configs/test_minion.config`) to provide the correct SLURM queue name for your system.**
+**If you are using SLURM, modify the two configs (`configs/test_illumina.config` and `configs/test_minion.config`) to provide the correct SLURM queue name for your system. Alternatively, you can specify the queue using the `SLURM_Queue` command line parameter.**
 
 ```shell
 nextflow run PHAC-NML/nf-ViralMutations -r v1.1.0 -profile singularity,slurm,test_MinION
-nextflow run PHAC-NML/nf-ViralMutations -r v1.1.0 -profile singularity,slurm,test_Illumina
+nextflow run PHAC-NML/nf-ViralMutations -r v1.1.0 -profile singularity,slurm,test_Illumina --SLURM_Queue MyQueue
 ```
 
 ## Parameters
