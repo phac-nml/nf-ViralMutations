@@ -31,7 +31,7 @@ workflow {
     log.info paramsSummaryLog(workflow)
 
     setFolder = {
-        def sample = it[0]
+        def sample = it[0].id
         def newPath = "${params.outdir}/${sample}/QC/Raw"
 
         return [it[0], it[1], it[2], newPath]

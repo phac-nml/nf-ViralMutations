@@ -27,6 +27,17 @@ Assuming all the parameters are stored in a JSON or YAML file, navigate to the f
 nextflow run PHAC-NML/nf-ViralMutations -r v1.1.0 -params-file /loc/of/Params_Exp1.yml -profile singularity,slurm
 ```
 
+### Running the test configurations
+
+Two test configurations are included as profiles. One tests the Illumina pipeline and includes de-hosting (using MPXV genome as host for speed). The other tests the MinION pipeline and includes primer clipping. The datasets included are quite small so they should run quickly. These tests only ensure all processes can run without issue.
+
+**If you are using SLURM, modify the two configs (`configs/test_illumina.config` and `configs/test_minion.config`) to provide the correct SLURM queue name for your system.
+
+```shell
+nextflow run PHAC-NML/nf-ViralMutations -r v1.1.0 -profile singularity,slurm,test_MinION
+nextflow run PHAC-NML/nf-ViralMutations -r v1.1.0 -profile singularity,slurm,test_Illumina
+```
+
 ## Parameters
 
 The full set of parameters are described in the comments in the `nextflow.config` file.
@@ -103,7 +114,7 @@ The entry is added to a barebones snpEff.config file saved in the pipeline direc
 
 - `genes.gtf` contains the annotations in GTF (GFF3) format (concatenated entries for segmented genomes) and the FASTA sequences under a `##FASTA` section
 
-The easiest way to assemble this folder is to download the entries (selecting all of them for segmented genomes) from GenBank (or other repository) directly.
+The easiest way to assemble this file is to download the entries (selecting all of them for segmented genomes) from GenBank (or other repository) directly.
 If the annotations were modified and exported in a Windows software (e.g. DNASTAR's SeqBuilder or UGENE), make sure the files have LF (and not CRLF) line endings.
 
 ### Input reads
