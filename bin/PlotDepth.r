@@ -6,6 +6,7 @@ args <- commandArgs(trailingOnly = TRUE)
 
 dat <- read_tsv(args[1], col_names = F)
 names(dat) <- c("CHR", "Position", "Depth")
+num_plots <- length(unique(dat$CHR))
 if (max(dat$Depth) > 0){
     p <- ggplot(dat, aes(Position, Depth)) +
         theme_minimal() +
@@ -17,7 +18,7 @@ if (max(dat$Depth) > 0){
         panel.grid.minor.x = element_blank()) +
         facet_wrap(~CHR, scales = "free_x", ncol = 1)
 
-    ggsave(paste0(args[2],"_depth.pdf"), p, width = 9, height = 6, useDingbats = F, device = "pdf")
+    ggsave(paste0(args[2],"_depth.pdf"), p, width = 9, height = 5 + 2 * num_plots, useDingbats = F, device = "pdf")
 }
 
 quit()

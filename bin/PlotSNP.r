@@ -20,6 +20,7 @@ library(readxl)
 
 depth <- read.delim(args[1], header = F, sep = "\t")
 names(depth) <- c("CHR", "Position", "Depth")
+num_plots <- length(unique(dat$CHR))
 plot_top  <- ceiling(log10(max(depth$Depth)))
 variants <- read.delim(args[2], sep = "\t")
 if (nrow(variants) == 0) quit(save = "no")
@@ -66,7 +67,7 @@ if(GeneLocs){
         panel.grid.minor.x = element_blank()) +
         facet_wrap(~CHR, scales = "free_x", ncol = 1)
 
-    ggsave(paste0(args[3], "_variants.pdf"), p, width = 9, height = 6, useDingbats = F, device = "pdf")
+    ggsave(paste0(args[3], "_variants.pdf"), p, width = 9, height = 5 + 2 * num_plots, useDingbats = F, device = "pdf")
     quit()
 } else {
     p <- ggplot(depth, aes(Position, log10(Depth))) +
@@ -85,6 +86,6 @@ if(GeneLocs){
         panel.grid.minor.x = element_blank()) +
         facet_wrap(~CHR, scales = "free_x", ncol = 1)
 
-    ggsave(paste0(args[3], "_variants.pdf"), p, width = 9, height = 6, useDingbats = F, device = "pdf")
+    ggsave(paste0(args[3], "_variants.pdf"), p, width = 9, height = 5 + 2 * num_plots, useDingbats = F, device = "pdf")
     quit()
 }
