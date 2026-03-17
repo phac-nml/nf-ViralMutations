@@ -20,7 +20,7 @@ library(readxl)
 
 depth <- read.delim(args[1], header = F, sep = "\t")
 names(depth) <- c("CHR", "Position", "Depth")
-num_plots <- length(unique(dat$CHR))
+num_plots <- length(unique(depth$CHR))
 plot_top  <- ceiling(log10(max(depth$Depth)))
 variants <- read.delim(args[2], sep = "\t")
 if (nrow(variants) == 0) quit(save = "no")
