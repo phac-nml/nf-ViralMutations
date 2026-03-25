@@ -4,6 +4,7 @@ include {
     CreateHostIndexMinION;
     SetSnpEff;
     SwitchBedpe;
+    GetNextCladeData;
 } from '../modules/preflight.nf'
 
 workflow PreFlight{
@@ -13,6 +14,7 @@ workflow PreFlight{
         SetSnpEff(snpeff_entry_ch, params.SnpEff_Name, snpeff_config_ch)
 
         ref_index_ch = channel.empty()
+        nextclade_ch = channel.empty()
         
         if ( params.Seq_Tech == "Illumina") {
             ref_index_ch = CreateIndex(params.Target_Reference)
@@ -48,6 +50,13 @@ workflow PreFlight{
         } else {
             primer_locs_ch = channel.empty()
         }
+
+        if (params.NextClade_assign){
+            Channel.fromPath("${params.NextClade_assign}", checkIfExists: true)
+            | splitCsv(header: true)
+            | GetNextCladeData
+            | set { nextclade_ch }
+        }
         
 
     emit:
@@ -55,4 +64,5 @@ workflow PreFlight{
         Target_Reference = ref_index_ch
         Host = host_index_ch
         Primers = primer_locs_ch.ifEmpty("EMPTY")
+        NextClade = nextclade_ch
 }

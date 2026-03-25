@@ -96,3 +96,23 @@ process SwitchBedpe {
         cut -f1,2,3 ${PrimerBed} | awk -v OFS='\t' '!(NR%2){print p, \$0}{p=\$0}' > \${name}_bc.bedpe
     """
 }
+
+process GetNextCladeData{
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/nextclade:3.21.0--h9ee0642_0' :
+        'biocontainers/nextclade:3.21.0--h9ee0642_0'}"
+    label 'process_single'
+    tag { "${Name}" }
+
+    input:
+    tuple val(Name), val(Reference), val(Dataset)
+
+    output:
+    tuple val(Name), val(Reference), path("*.zip")
+
+    script:
+    """
+        nextclade dataset get --name "${Dataset}" -z ${Name}.zip
+    """
+
+}
