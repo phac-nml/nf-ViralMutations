@@ -190,6 +190,18 @@
                 }
             }
         },
+        "nextclade": {
+            "title": "Options that control NextClade.",
+            "type": "object",
+            "properties": {
+                "NextClade_assign": {
+                    "type": "string",
+                    "format": "file-path",
+                    "default": "",
+                    "description": "A csv to indicate which NextClade dataset is assigned to which reference. Columns: Name,Reference,NextClade_dataset"
+                }
+            }
+        },
         "pipeline_options": {
             "title": "Options related to running the pipeline.",
             "type": "object",

@@ -10,6 +10,7 @@ The pipeline is designed to allow a number of options for analysis:
 - Primer clipping (position-based) (Illumina and MinION)
 - Targeted downsampling (only downsamples regions above the threshold) (Illumina and MinION)
 - The minimum depth and frequency thresholds can be adjusted separately for SNP reporting and consensus calling
+- The possibility of running NextClade on the consensus sequences.
   
 The consensus will include IUPAC alternates if multiple alternate bases create a situation where neither an alternate nor the reference form consensus.
 
@@ -123,6 +124,19 @@ Specify a name for the snpEff entry (`SnpEff_Name`) and a path to the `genes.gtf
 SnpEff_Name: "ebov_refseq"
 SnpEff_gtf: "/home/user/Data/gtfFiles/EBOV_RefSeq/genes.gtf
 ```
+
+### NextClade analysis
+
+In the case where a NextClade dataset is available to classify and analyse the consensus, it is possible to run the analysis on a per-sample basis.
+To account for segmented viruses, where each segment has its own dataset, an assignment sheet is passed identifying which dataset is assigned to each reference segment.
+For non-segmented viruses, this sheet will have a single entry.
+The assignment sheet is a CSV file with 3 columns:
+
+- `Name` is the name used in the output to differentiate the segment results.
+- `Reference` is the name of the reference sequence the reads were mapped to in the reference fasta file.
+- `NextClade_dataset` is the name of the dataset to use for that segment (e.g.: "nextstrain/mpox/all-clades" for MPXV)
+
+The file is passed to the `NextClade_assign` parameter.
 
 ### Input reads
 

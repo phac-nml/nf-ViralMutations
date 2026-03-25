@@ -61,11 +61,11 @@ def format_reads(ArrayList sheet_data){
     if(sheet_data[0].id){
         meta.id = sheet_data[0].id
         meta.sample = sheet_data[0].id
-        meta.external_id = sheet_data[0].external_id
+        meta.irida_id = sheet_data[0].irida_id
     }else{
-        meta.id = sheet_data[0].external_id
-        meta.sample = sheet_data[0].external_id
-        meta.external_id = sheet_data[0].external_id
+        meta.id = sheet_data[0].irida_id
+        meta.sample = sheet_data[0].irida_id
+        meta.irida_id = sheet_data[0].irida_id
     }
 
     def ret_val = null

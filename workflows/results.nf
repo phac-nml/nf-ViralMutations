@@ -4,7 +4,10 @@ include {
     Consensus ;
     Variant_Plot ;
     MakeNiceVCF ;
-    FilterVCF
+    FilterVCF;
+    FlattenConsensus;
+    Run_NextClade;
+    FilterConsensus;
 } from '../modules/results.nf'
 
 workflow Results {
@@ -12,7 +15,8 @@ workflow Results {
     final_alignment_ch
     reference_ch      
     snpeff_config_ch  
-    depths_ch         
+    depths_ch
+    nextclade_ch         
 
     main:
     basic_vcf_header = channel.fromPath("${projectDir}/data/basic_header.vcf", type: 'file')
@@ -37,6 +41,13 @@ workflow Results {
     }
 
     Consensus(MakeNiceVCF.out.consensus_vcf_ch.join(depths_ch).combine(reference_ch))
+
+    if (params.NextClade_assign){
+        FlattenConsensus(Consensus.out)
+        | combine (nextclade_ch)
+        | FilterConsensus
+        | Run_NextClade
+    }
 
     emit:
     snpEff_report = SnpEff.out.snpeff_qc_ch

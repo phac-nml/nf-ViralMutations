@@ -166,3 +166,61 @@ process Variant_Plot {
         """
     }
 }
+
+process FlattenConsensus {
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/mulled-v2-bb5f3dab55f89ca6e9acdff899d8409efffcc444:949930df72decfcefd14c5d64ef58250f319589e-0' :
+        'biocontainers/mulled-v2-bb5f3dab55f89ca6e9acdff899d8409efffcc444:949930df72decfcefd14c5d64ef58250f319589e-0'}"
+    tag { "$meta.id" }
+    label 'process_single'
+
+    input:
+    tuple val(meta), file(consensus)
+
+    output:
+    tuple val(meta), file("*_1L.fasta")
+
+    script:
+    """
+    RemoveFastaLineBreaks.py -i ${consensus} -o ${meta.id}_consensus_1L.fasta
+    """
+}
+
+process FilterConsensus {
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/grep:2.14--1' :
+        'biocontainers/grep:2.14--1'}"
+    tag { "$meta.id" }
+    label 'process_single'
+
+    input:
+    tuple val(meta), file(consensus_flat), val(Name), val(reference), file(Dataset)
+
+    output:
+    tuple val(meta), file("*.fasta"), val(Name), val(reference), file(Dataset)
+
+    script:
+    """
+    grep -A1 "${reference}" ${consensus_flat} > ${meta.id}_consensus_filtered.fasta
+    """
+}
+
+process Run_NextClade {
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/nextclade:3.21.0--h9ee0642_0' :
+        'biocontainers/nextclade:3.21.0--h9ee0642_0'}"
+    tag { "$meta.id" }
+    label 'process_single'
+    publishDir "${params.outdir}/${meta.id}", mode: 'copy'
+
+    input:
+    tuple val(meta), file(consensus_flat), val(Name), val(Reference), file(Dataset)
+
+    output:
+    tuple val(meta), file("NextClade/*.*")
+
+    script:
+    """
+    nextclade run -D ${Dataset} --output-basename ${meta.id}_${Name} --include-reference --output-selection fasta,ndjson,csv,tsv,tree,tree-nwk,gff -O NextClade/ ${consensus_flat}
+    """
+}

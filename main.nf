@@ -43,7 +43,7 @@ workflow {
     Alignment(PreProcess.out.trimmed_reads, PreFlight.out.Target_Reference, PreFlight.out.Host, reference_ch)
     BAM_QC(Alignment.out.aligned_reads)
     CleanUp(Alignment.out.aligned_reads, PreFlight.out.Primers)
-    Results(CleanUp.out.final_align, reference_ch, PreFlight.out.SnpEff_config, CleanUp.out.depths)
+    Results(CleanUp.out.final_align, reference_ch, PreFlight.out.SnpEff_config, CleanUp.out.depths, PreFlight.out.NextClade)
     DepthGraph(CleanUp.out.depths)
     Results.out.snpEff_report
         | map(setFolder)
