@@ -5,6 +5,7 @@ process Dedup {
     tag { "$meta.id" }
     label 'process_medium'
     publishDir "${params.outdir}/${meta.id}/Alignments", mode: 'copy'
+    publishDir "${params.outdir}/${meta.id}/QC/Raw", pattern: "*.txt", mode: 'copy'
 
     input:
     tuple val(meta), file(aligned), file(index)

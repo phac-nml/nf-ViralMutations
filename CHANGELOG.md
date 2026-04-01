@@ -5,6 +5,7 @@
 ### Fixes
 - Consensus process wasn't working if the reference fasta contained empty lines between segment sequences (default for fasta files from NCBI). This was due to bcftools stopping the processing when it hit an empty line. A sed command was introduced to remove empty lines from the reference before piping into bcftools. Also, it is a good idea to remove the empty lines from the reference fasta in the first place.
 - Due to the way BamClipper was checking for primer regions (checking only for the F primer in the forward-aligned read and the R primer in the reverse-aligned read), it was possible that very short inserts created by Nextera or TruSeq protocols on small tiling amplicons would not be clipped correctly. This is due to that scenario leading to, for example, reverse-aligned reads that have a F primer but no R primer. I changed the primer region check to ignore the direction of the aligned read. Since BamClipper has not been updated in almost a decade, I have copied the relevant code files (with changes to clipprimer.pl) into the `bin` folder and added the MIT license at the top of the files. (added the BamClipper repo as PR#19, https://github.com/tommyau/bamclipper/pull/19)
+- Export duplication stats to the QC/Raw folder instead of the Alignments folder.
 
 ### Changes
 - Switched read trimming to fastp/fastplong. These softwares also provide the pre- and post-trimming QC reports.
